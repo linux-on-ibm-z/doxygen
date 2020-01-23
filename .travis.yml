@@ -2,7 +2,7 @@ language: cpp
 os: linux
 dist: xenial
 compiler:
-  - gcc
+#  - gcc
   - clang
 
 addons:
@@ -56,12 +56,12 @@ linux-s390x: &linux-s390x
 
 jobs:
     include:
-        - <<: *linux-ppc64le
-          compiler: gcc
-        - <<: *linux-ppc64le
-          compiler: clang
-        - <<: *linux-s390x
-          compiler: gcc
+#        - <<: *linux-ppc64le
+#          compiler: gcc
+#        - <<: *linux-ppc64le
+#          compiler: clang
+#        - <<: *linux-s390x
+#          compiler: gcc
         - <<: *linux-s390x
           compiler: clang
 #        - os: osx
@@ -120,7 +120,7 @@ script:
     - cd build
     - cmake --version;
     - cmake -G "Unix Makefiles" -Dbuild_doc=ON -Dbuild_wizard=ON ..
-    - make -j4
+    - make -j8
     - if [ ! "${TRAVIS_OS_NAME}" == "osx" ]; then
         make tests;
         make docs;
