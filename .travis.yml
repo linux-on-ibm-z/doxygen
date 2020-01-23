@@ -53,6 +53,10 @@ linux-s390x: &linux-s390x
               - cmake
               - cmake-data
               - qt-sdk
+              - libc6 
+              - libclang1-3.* 
+              - libgcc1 
+              - libstdc++6
 
 jobs:
     include:
