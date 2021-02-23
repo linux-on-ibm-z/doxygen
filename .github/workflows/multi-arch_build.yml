@@ -1,0 +1,53 @@
+name: Multi-arch GCC Build for Doxygen
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        include:
+          - arch: s390x
+            distro: ubuntu18.04
+            build_type: "Release"
+          - arch: s390x
+            distro: ubuntu18.04
+            build_type: "Debug"
+
+    steps:
+    - uses: actions/checkout@v1
+
+    - uses: uraimo/run-on-arch-action@v2.0.8
+      name: Configure and Build
+      id: build
+      with:
+        arch: ${{ matrix.arch }}
+        distro: ${{ matrix.distro }}
+        githubToken: ${{ github.token }}
+        env: |
+          CC: gcc
+          CXX: g++
+          CTEST_OUTPUT_ON_FAILURE: ON
+        shell: /bin/bash
+        install: |
+          apt-get update -q -y
+          apt-get install -q -y cmake gcc g++ flex bison qt5-default zlib1g-dev libsqlite3-dev texlive texlive-latex-recommended texlive-extra-utils texlive-latex-extra texlive-font-utils libxapian-dev ghostscript libxml2-utils graphviz
+        run: |
+          mkdir build
+          cd build
+          cmake \
+            -G "Unix Makefiles" \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -Dbuild_doc=YES \
+            -Dbuild_wizard=YES \
+            -Dbuild_search=YES \
+            -Dbuild_app=YES \
+            -Dbuild_parse=YES \
+            -Dbuild_xmlparser=YES \
+            -Duse_sqlite3=ON \
+            ..
+          cmake --build $(pwd)
+          cmake --build $(pwd) --target tests -- TEST_FLAGS="--xml --xmlxsd --xhtml --docbook --rtf"
+          cmake --build $(pwd) --target docs
