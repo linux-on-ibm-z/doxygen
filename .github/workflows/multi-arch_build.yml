@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   build:
-    name: Build on ${{ matrix.distro }} ${{ matrix.arch }}
+    name: Build on ${{ matrix.distro }} ${{ matrix.arch }} ${{ matrix.build_type }}
     runs-on: ubuntu-18.04
     strategy:
       matrix:
@@ -19,7 +19,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
 
-    - uses: uraimo/run-on-arch-action@v2.0.8
+    - uses: uraimo/run-on-arch-action@v2.0.9
       name: Configure and Build
       id: build
       with:
@@ -35,6 +35,7 @@ jobs:
           apt-get update -q -y
           apt-get install -q -y cmake gcc g++ flex bison qt5-default zlib1g-dev libsqlite3-dev texlive texlive-latex-recommended texlive-extra-utils texlive-latex-extra texlive-font-utils libxapian-dev ghostscript libxml2-utils graphviz
         run: |
+          set -x
           mkdir build
           cd build
           cmake \
